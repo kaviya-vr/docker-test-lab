@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environment
+.venv/
+venv/
+
+# PyCharm
+.idea/
+
+# Environment variables / secrets
+.env
+
+# Generated reports
+reports/*.txt

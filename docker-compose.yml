@@ -1,0 +1,40 @@
+services:
+
+  web:
+    image: nginx:latest
+    container_name: test_web
+    ports:
+      - "8080:80"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  db:
+    image: postgres:15
+    container_name: test_db
+    environment:
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: testpass
+      POSTGRES_DB: testdb
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U testuser -d testdb"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  tester:
+    build: ./test_runner
+    container_name: test_runner
+
+    depends_on:
+      web:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+
+    volumes:
+      - ./reports:/app/reports
