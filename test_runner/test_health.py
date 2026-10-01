@@ -2,14 +2,21 @@ import requests
 import psycopg2
 import socket
 import time
+import sys
 from datetime import datetime
 
 report_lines = []
+test_failed = False
 
 def add_result(test_name, status, message):
+    global test_failed
+
     line = f"{test_name}: {status} - {message}"
     print(line)
     report_lines.append(line)
+
+    if status == "FAIL":
+        test_failed = True
 
 def check_web():
     try:
@@ -71,3 +78,10 @@ if __name__ == "__main__":
     check_port("web", 80)
     check_port("db", 5432)
     generate_report()
+
+    if test_failed:
+        print("\nOne or more tests failed.")
+        sys.exit(1)
+
+    print("\nAll tests passed.")
+    sys.exit(0)
